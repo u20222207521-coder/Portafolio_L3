@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portafolio EA-III · Lizeth Bonilla · USCO 2026</title>
+  <link rel="icon" type="image/png" href="Fotos/Logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-dots"></div>
+    <div class="hero-content">
+      <span class="badge">Universidad Surcolombiana · Ingeniería Electrónica · 2026</span>
+      <h1>Electrónica<br>Analógica <em>III</em></h1>
+      <p class="hero-sub">Portafolio semestral de diseño, simulación e implementación de circuitos analógicos avanzados</p>
+      <div class="hero-card">
+        <div class="hc-main">
+          <img src="Fotos/foto_perfi.jpeg" alt="Lizeth Ginary Bonilla Chinchilla" class="profile-pic">
+          <strong>Lizeth Ginary Bonilla Chinchilla</strong>
+          <code>20222207521</code>
+        </div>
+        <div class="hc-div"></div>
+        <ul class="hc-team">
+          <li>Reynaldo Medina Cabrera</li>
+          <li>Juan Andrés Urrea</li>
+          <li>Julián David Silva Escobar</li>
+          <li>Brayan Esteban Pinzón Lozano</li>
+        </ul>
+      </div>
+      <a href="#proyectos" class="scroll-btn">Ver proyectos ↓</a>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="wrap">
+      <div class="stat"><span>5</span>Proyectos</div>
+      <div class="stat"><span>5</span>Circuitos</div>
+      <div class="stat"><span>99,1%</span>Reducción de costo</div>
+      <div class="stat"><span>60</span>BPM sintetizados</div>
+      <div class="stat"><span>3</span>Patologías emuladas</div>
+    </div>
+  </section>
+
+  <!-- PROJECTS GRID -->
+  <section id="proyectos" class="projects-section">
+    <div class="wrap">
+      <h2 class="sec-title">Proyectos del semestre</h2>
+
+      <div class="projects-grid">
+
+        <!-- P1 -->
+        <a href="p1.html" class="pcard" style="--c:#39ff14;--cg:linear-gradient(135deg,#0c0f14,#0d1a0f)">
+          <div class="pcard-glow"></div>
+          <span class="pcard-num">01</span>
+          <div class="pcard-body">
+            <h3>Bitácora de Laboratorio</h3>
+            <p>Implementación y análisis de cinco circuitos analógicos: clamper activo, amplificador clase B, DAC R-2R de 4 bits, filtro Sallen-Key e inductor simulado de 560 mH.</p>
+            <ul class="pcard-tags">
+              <li>LM324 · 2N3904/3906</li>
+              <li>fc = 50 kHz · Q = 0,5</li>
+              <li>Error inductor: −1,14%</li>
+            </ul>
+          </div>
+          <div class="pcard-footer">
+            <span class="pcard-cta">Abrir proyecto →</span>
+            <span class="pcard-chip">5 circuitos</span>
+          </div>
+        </a>
+
+        <!-- P2 -->
+        <a href="p2.html" class="pcard" style="--c:#00ffa3;--cg:linear-gradient(135deg,#050f0a,#061a12)">
+          <div class="pcard-glow"></div>
+          <span class="pcard-num">02</span>
+          <div class="pcard-body">
+            <h3>Conteo de Colonias Bacterianas</h3>
+            <p>Sistema analógico de barrido raster con cadena de 6 etapas para detección automática de colonias en cajas de Petri. MVP implementado en protoboard.</p>
+            <ul class="pcard-tags">
+              <li>LM358 · NE555</li>
+              <li>Fuente simple +5 V</li>
+              <li>MVP $18,70 USD</li>
+            </ul>
+          </div>
+          <div class="pcard-footer">
+            <span class="pcard-cta">Abrir proyecto →</span>
+            <span class="pcard-chip">−99,1% costo</span>
+          </div>
+        </a>
+
+        <!-- P3 -->
+        <a href="p3.html" class="pcard" style="--c:#ffd700;--cg:linear-gradient(135deg,#0a120e,#111a0a)">
+          <div class="pcard-glow"></div>
+          <span class="pcard-num">03</span>
+          <div class="pcard-body">
+            <h3>Tutorial PCB en EasyEDA</h3>
+            <p>Flujo completo de diseño de PCB para el filtro Sallen-Key aplicando criterios DFM y DRC. Fabricación industrial en JLCPCB con costo inferior a $20 USD.</p>
+            <ul class="pcard-tags">
+              <li>EasyEDA · JLCPCB</li>
+              <li>50 × 40 mm · 2 capas</li>
+              <li>DRC: 0 errores</li>
+            </ul>
+          </div>
+          <div class="pcard-footer">
+            <span class="pcard-cta">Abrir proyecto →</span>
+            <span class="pcard-chip">$2,53 / unidad</span>
+          </div>
+        </a>
+
+        <!-- P4 -->
+        <a href="p4.html" class="pcard" style="--c:#7c83fd;--cg:linear-gradient(135deg,#06081f,#0a0d28)">
+          <div class="pcard-glow"></div>
+          <span class="pcard-num">04</span>
+          <div class="pcard-body">
+            <h3>Sintetizador ECG — Diseño</h3>
+            <p>Caracterización matemática de la señal ECG y propuesta del modelo de síntesis gaussiano. Especificación de requerimientos para 5 subondas y 3 anomalías cardíacas.</p>
+            <ul class="pcard-tags">
+              <li>Modelo gaussiano P,Q,R,S,T</li>
+              <li>75 lpm · ciclo 800 ms</li>
+              <li>3 anomalías modeladas</li>
+            </ul>
+          </div>
+          <div class="pcard-footer">
+            <span class="pcard-cta">Abrir proyecto →</span>
+            <span class="pcard-chip">5 subondas</span>
+          </div>
+        </a>
+
+        <!-- P5 -->
+        <a href="p5.html" class="pcard pcard-wide" style="--c:#ff3055;--cg:linear-gradient(135deg,#110005,#1a0008)">
+          <div class="pcard-glow"></div>
+          <span class="pcard-num">05</span>
+          <div class="pcard-body">
+            <h3>Sintetizador ECG — Síntesis Modular</h3>
+            <p>Implementación física del sintetizador de señal electrocardiográfica a 60 BPM utilizando exclusivamente circuitos analógicos. Filtros Bessel-Thompson (Q = 0,55) para ondas P y T, integradores limitados para el complejo QRS, y emulación en tiempo real de tres patologías cardíacas.</p>
+            <ul class="pcard-tags">
+              <li>60 BPM · Solo analógico</li>
+              <li>Bessel-Thompson C₁/C₂ = 1,21</li>
+              <li>Fibrilación · Hipertrofia · Isquemia</li>
+            </ul>
+          </div>
+          <div class="pcard-footer">
+            <span class="pcard-cta">Abrir proyecto →</span>
+            <span class="pcard-chip">3 patologías</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="wrap">
+      <p>Electrónica Analógica III · Ingeniería Electrónica · Universidad Surcolombiana · Neiva, 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll navbar effect
+    const hero = document.querySelector('.hero');
+    document.querySelectorAll('.scroll-btn').forEach(b => {
+      b.addEventListener('click', e => {
+        e.preventDefault();
+        document.getElementById('proyectos').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Animate cards on scroll
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.pcard, .stat').forEach(el => { el.classList.add('pre-anim'); obs.observe(el); });
+  </script>
+</body>
+</html>
