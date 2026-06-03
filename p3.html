@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial PCB EasyEDA · EA-III</title>
+  <link rel="stylesheet" href="project.css">
+  <style>
+    :root {
+      --accent:        #ffd700;
+      --accent-dim:    rgba(255,215,0,.1);
+      --accent-border: rgba(255,215,0,.28);
+      --bg:            #090e07;
+      --bg-2:          #0f160a;
+      --surface:       rgba(255,215,0,.05);
+      --border:        rgba(255,215,0,.1);
+      --hero-gradient: linear-gradient(160deg, #060b04 0%, #0a1408 50%, #07100a 100%);
+      --muted:         rgba(240,255,200,.55);
+      --green:         #00b44a;
+    }
+    /* PCB trace pattern */
+    .phero::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,180,74,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,180,74,.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    /* Pad dots at intersections */
+    .phero::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background-image: radial-gradient(rgba(255,215,0,.15) 2px, transparent 2px);
+      background-size: 40px 40px;
+    }
+    .phase-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0; padding: 1.6rem; margin-bottom: .9rem;
+      transition: background .25s, transform .25s;
+    }
+    .phase-card:hover { background: var(--accent-dim); transform: translateX(4px); }
+    .phase-tag {
+      display: inline-block; font-size: .72rem; font-weight: 800; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      padding: .2rem .6rem; border-radius: 4px; margin-bottom: .5rem;
+    }
+    .phase-card h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .4rem; }
+    .phase-card p { font-size: .88rem; color: var(--muted); line-height: 1.65; }
+    .drc-ok { color: var(--green); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <nav class="pnav">
+    <a href="p2.html" class="pnav-back">← Colonias</a>
+    <span class="pnav-title">Tutorial PCB en EasyEDA</span>
+    <a href="p4.html" class="pnav-next">ECG Diseño →</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="phero">
+    <div class="phero-accent"></div>
+    <div class="phero-content wrap" style="position:relative;z-index:2">
+      <span class="ptag">Tercer proyecto</span>
+      <h1>Tutorial de Diseño<br>de <em>PCB en EasyEDA</em></h1>
+      <p class="phero-sub">Flujo completo de diseño de placa de circuito impreso para el filtro Sallen-Key, aplicando DFM y DRC. Fabricación industrial con JLCPCB por menos de $20 USD — costo final: $2,53 USD por unidad.</p>
+    </div>
+  </header>
+
+  <!-- OBJETIVO -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Objetivo del Tutorial</h2>
+      <p class="sdesc">Desarrollar un tutorial técnico que detalle el diseño completo y justificado de una PCB para el filtro activo Sallen-Key utilizando EasyEDA, aplicando criterios de Diseño para Manufacturabilidad (DFM) y Verificación de Reglas de Diseño (DRC), garantizando fabricación industrial por menos de $20 USD.</p>
+
+      <div class="cards-grid">
+        <div class="card fi">
+          <div class="card-icon">📐</div>
+          <h4>DRC — Design Rule Check</h4>
+          <p>Proceso automático que verifica que el diseño cumpla las restricciones del proveedor de fabricación. Contrasta las primitivas gráficas contra una matriz de restricciones paramétricas (mecánicas, químicas y ópticas).</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">🏭</div>
+          <h4>DFM — Design For Manufacturability</h4>
+          <p>Metodología que integra las restricciones del proceso de fabricación desde las etapas más tempranas del diseño. Objetivo: maximizar rendimiento de producción y minimizar costos de fabricación y ensamblaje.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FASES -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Flujo de Diseño — 5 Fases</h2>
+
+      <div class="phase-card fi">
+        <span class="phase-tag">Fase 0</span>
+        <h4>Simulación y Validación Teórica en Multisim</h4>
+        <p>Antes de diseñar la PCB se validó el circuito Sallen-Key en NI Multisim mediante análisis AC Sweep. Se verificó la respuesta en frecuencia y se confirmaron fc = 50 kHz y Q = 0,5. Criterio fundamental: nunca fabricar un circuito que no haya sido validado previamente.</p>
+      </div>
+
+      <div class="phase-card fi">
+        <span class="phase-tag">Fase 1</span>
+        <h4>Esquemático y Selección de Componentes en EasyEDA</h4>
+        <p>Captura del esquemático usando componentes de biblioteca LCSC (footprints verificados, disponibles en stock). Se optó por tecnología THT (DIP-8 para LM358, resistencias AXIAL-0.4, capacitores radiales 2,54 mm, borneras 5 mm). ERC ejecutado: 0 errores de conectividad. El diseño se organizó en 3 bloques lógicos: entrada, filtrado y alimentación.</p>
+      </div>
+
+      <div class="phase-card fi">
+        <span class="phase-tag">Fase 2</span>
+        <h4>Diseño Físico — 50 × 40 mm</h4>
+        <p>Área compacta por debajo del límite de 100×100 mm (tarifa mínima JLCPCB ≈ $2 USD/5 placas). Pistas de señal: 10 mils (0,254 mm). Pistas de alimentación: 20 mils (0,508 mm). Giros a 45° para evitar trampa de ácido. Plano de masa GND en ambas caras (Copper Pour). Componentes ubicados siguiendo el flujo lógico de izquierda a derecha.</p>
+        <div class="formula">Señal: 10 mils · Alimentación: 20 mils · Contorno: ≥ 0,5 mm</div>
+      </div>
+
+      <div class="phase-card fi">
+        <span class="phase-tag">Fase 3</span>
+        <h4>Visualización 3D y Archivos de Fabricación</h4>
+        <p>Inspección 3D previa a la exportación para verificar colisiones mecánicas y orientación de conectores. Archivos exportados: Gerber RS-274X (.GTL, .GBL, .GTO, .GTS, .GBS, .GKO), taladros Excellon (.DRL) y archivo Pick &amp; Place (CPL).</p>
+      </div>
+
+      <div class="phase-card fi" style="border-left-color: var(--green)">
+        <span class="phase-tag" style="color: var(--green); border-color: rgba(0,180,74,.3); background: rgba(0,180,74,.1)">DRC: 0 errores ✓</span>
+        <h4>Fase 5 — Validación Industrial en JLCPCB</h4>
+        <p>Diseño cargado en JLCPCB. Parámetros: FR-4, 2 capas, 50×40 mm, 1,6 mm grosor, HASL con plomo, máscara verde. <span class="drc-ok">Resultado: 0 errores DRC.</span> Costo de fabricación: $4 USD por 5 placas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGLAS DRC + BOM -->
+  <section class="section">
+    <div class="wrap">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start">
+        <div>
+          <h2 class="stitle">Reglas DRC — JLCPCB</h2>
+          <div class="rules-grid fi">
+            <div class="rule"><span class="rule-v">5 mils</span><span class="rule-l">Ancho mín. pista</span></div>
+            <div class="rule"><span class="rule-v">5 mils</span><span class="rule-l">Espaciado mínimo</span></div>
+            <div class="rule"><span class="rule-v">0,3 mm</span><span class="rule-l">Perforación vía</span></div>
+            <div class="rule"><span class="rule-v">0,13 mm</span><span class="rule-l">Anillo anular</span></div>
+            <div class="rule"><span class="rule-v">2 mils</span><span class="rule-l">Despeje máscara</span></div>
+            <div class="rule"><span class="rule-v">100×100</span><span class="rule-l">Límite tarifa min.</span></div>
+          </div>
+        </div>
+        <div>
+          <h2 class="stitle">BOM — Lista de Materiales</h2>
+          <table class="ptable fi" style="margin-top:0">
+            <tr><th>Componente</th><th>Cant.</th><th>USD</th></tr>
+            <tr><td>Capacitor 121M-50V</td><td>2</td><td>$0,501</td></tr>
+            <tr><td>Conector KF301-2P</td><td>2</td><td>$0,812</td></tr>
+            <tr><td>Resistencia 3,3 kΩ</td><td>2</td><td>$0,202</td></tr>
+            <tr><td>Amp. Op. LM358P</td><td>1</td><td>$0,091</td></tr>
+            <tr><td>Conector KF301-5.0-3P</td><td>1</td><td>$0,127</td></tr>
+            <tr class="total"><td>Total BOM</td><td>6</td><td>$1,733</td></tr>
+          </table>
+          <div class="formula" style="margin-top:.8rem">BOM + fabricación = $1,73 + $0,80 = <strong>$2,53 / unidad</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section class="section">
+    <div class="wrap">
+      <h3 class="gallery-h">Capturas del proceso de diseño</h3>
+      <div class="gallery">
+        <img src="Fotos/P3/Figura1.jpg" alt="Figura 1">
+        <img src="Fotos/P3/Figura2.jpg" alt="Figura 2">
+        <img src="Fotos/P3/Figura3.jpg" alt="Figura 3">
+        <img src="Fotos/P3/Figura4.jpg" alt="Figura 4">
+        <img src="Fotos/P3/Figura5.jpg" alt="Figura 5">
+        <img src="Fotos/P3/Figura6.jpg" alt="Figura 6">
+        <img src="Fotos/P3/Figura7.jpg" alt="Figura 7">
+        <img src="Fotos/P3/Figura8.jpg" alt="Figura 8">
+        <img src="Fotos/P3/Figura9.jpg" alt="Figura 9">
+        <img src="Fotos/P3/Figura10.jpg" alt="Figura 10">
+        <img src="Fotos/P3/Figura11.jpg" alt="Figura 11">
+        <img src="Fotos/P3/Figura12.jpg" alt="Figura 12">
+        <img src="Fotos/P3/Figura13.jpg" alt="Figura 13">
+        <img src="Fotos/P3/Figura14.jpg" alt="Figura 14">
+        <img src="Fotos/P3/Figura15.jpg" alt="Figura 15">
+        <img src="Fotos/P3/Figura16.jpg" alt="Figura 16">
+        <img src="Fotos/P3/Figura76.jpg" alt="Figura 76">
+        <img src="Fotos/P3/Imagen1.jpg" alt="Imagen 1">
+        <img src="Fotos/P3/Imagen2.jpg" alt="Imagen 2">
+      </div>
+    </div>
+  </section>
+
+  <footer class="pfooter">
+    <div class="wrap">
+      <div class="pfooter-nav">
+        <a href="p2.html">← Conteo de Colonias</a>
+        <a href="p4.html">Siguiente: ECG Diseño →</a>
+      </div>
+      <div class="pfooter-info"><p>Electrónica Analógica III · Universidad Surcolombiana · 2026</p></div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lb">
+    <button class="lb-x" id="lbX">✕</button>
+    <button class="lb-p" id="lbP">‹</button>
+    <button class="lb-n" id="lbN">›</button>
+    <img class="lb-img" id="lbI" src="" alt="">
+  </div>
+  <script>
+    const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);}}),{threshold:.08});
+    document.querySelectorAll('.fi,.card,.phase-card,.rules-grid,.ptable').forEach(el=>{el.classList.add('fi');obs.observe(el);});
+    const lb=document.getElementById('lb'),lbI=document.getElementById('lbI');let imgs=[],cur=0;
+    document.querySelectorAll('.gallery img').forEach(img=>{img.addEventListener('click',()=>{imgs=Array.from(img.closest('.gallery').querySelectorAll('img'));cur=imgs.indexOf(img);open(cur);});});
+    function open(i){lbI.src=imgs[i].src;lbI.alt=imgs[i].alt;lb.classList.add('on');document.body.style.overflow='hidden';}
+    function close(){lb.classList.remove('on');document.body.style.overflow='';}
+    document.getElementById('lbX').onclick=close;lb.addEventListener('click',e=>{if(e.target===lb)close();});
+    document.getElementById('lbP').onclick=()=>{cur=(cur-1+imgs.length)%imgs.length;open(cur);};
+    document.getElementById('lbN').onclick=()=>{cur=(cur+1)%imgs.length;open(cur);};
+    document.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft'){cur=(cur-1+imgs.length)%imgs.length;open(cur);}if(e.key==='ArrowRight'){cur=(cur+1)%imgs.length;open(cur);}});
+  </script>
+</body>
+</html>

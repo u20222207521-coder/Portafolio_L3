@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintetizador ECG — Síntesis · EA-III</title>
+  <link rel="stylesheet" href="project.css">
+  <style>
+    :root {
+      --accent:        #ff3055;
+      --accent-dim:    rgba(255,48,85,.12);
+      --accent-border: rgba(255,48,85,.28);
+      --bg:            #0e0005;
+      --bg-2:          #18000a;
+      --surface:       rgba(255,48,85,.06);
+      --border:        rgba(255,48,85,.12);
+      --hero-gradient: linear-gradient(160deg, #0a0003 0%, #160008 50%, #0d0005 100%);
+      --muted:         rgba(255,200,210,.55);
+      --amber:         #ff9f0a;
+    }
+    /* Heartbeat pulse in hero */
+    .ecg-hero-line {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+      pointer-events: none; overflow: hidden;
+    }
+    .ecg-hero-line svg { width: 200%; height: 100%; animation: ecg-scroll 6s linear infinite; }
+    @keyframes ecg-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* Pathology cards with unique feel */
+    .path-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.8rem; position: relative; overflow: hidden;
+      transition: background .25s, transform .25s, box-shadow .25s;
+    }
+    .path-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--accent);
+    }
+    .path-card:hover { background: var(--accent-dim); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(255,48,85,.2); }
+    .path-icon { font-size: 2rem; margin-bottom: .8rem; }
+    .path-card h4 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+    .path-card p { font-size: .88rem; color: var(--muted); line-height: 1.65; }
+    .path-card .mechanism {
+      margin-top: .8rem; font-size: .8rem; font-family: monospace;
+      color: var(--accent); background: var(--accent-dim);
+      border: 1px solid var(--accent-border); padding: .3rem .7rem; border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* Error cards with left border */
+    .error-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 0 12px 12px 0; padding: 1.5rem; margin-bottom: .9rem;
+      transition: background .25s;
+    }
+    .error-card:hover { background: rgba(255,159,10,.07); }
+    .error-card h4 { font-size: .97rem; font-weight: 700; color: var(--amber); margin-bottom: .4rem; }
+    .error-card .problem { font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
+    .error-card .solution { font-size: .85rem; color: rgba(255,255,255,.8); }
+    .sol-tag {
+      display: inline-block; font-size: .72rem; font-weight: 700; color: #0e0005;
+      background: #00e676; padding: .15rem .5rem; border-radius: 3px; margin-right: .4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="pnav">
+    <a href="p4.html" class="pnav-back">← ECG Diseño</a>
+    <span class="pnav-title">Sintetizador ECG — Síntesis</span>
+    <a href="index.html" class="pnav-next">Portafolio →</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="phero">
+    <div class="phero-accent"></div>
+    <div class="phero-content wrap" style="position:relative;z-index:2">
+      <span class="ptag">Quinto proyecto</span>
+      <h1>Sintetizador ECG<br><em>Síntesis Modular · 60 BPM</em></h1>
+      <p class="phero-sub">Implementación física del sintetizador de señal electrocardiográfica utilizando exclusivamente circuitos analógicos. Sin microcontroladores. Sin sistemas digitales. 60 BPM de ritmo cardíaco sintetizado con morfología clínicamente correcta.</p>
+    </div>
+    <div class="ecg-hero-line">
+      <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+        <polyline points="0,40 100,40 110,40 118,20 125,60 132,40 160,40 172,8 184,72 191,40 210,40 310,40 318,40 326,22 333,58 340,40 368,40 380,8 392,72 399,40 418,40 518,40 526,40 534,22 541,58 548,40 576,40 588,8 600,72 607,40 626,40 726,40 734,40 742,22 749,58 756,40 784,40 796,8 808,72 815,40 834,40 934,40 942,40 950,22 957,58 964,40 992,40 1004,8 1016,72 1023,40 1042,40 1142,40 1150,40 1158,22 1165,58 1172,40 1200,40"
+          fill="none" stroke="#ff3055" stroke-width="2" opacity=".6"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- ARQUITECTURA -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Arquitectura Modular del Sistema</h2>
+      <p class="sdesc">El sistema se estructuró en cinco bloques funcionales en cascada, verificando el funcionamiento de cada bloque de forma independiente antes de la integración. Esta metodología permitió identificar y resolver problemas severos de hardware de manera sistemática.</p>
+
+      <div class="arch-flow">
+        <div class="ablock fi">
+          <h4>Generador de Rampa</h4>
+          <p>Integrador inversor con Vin = −0,66 V genera rampa 0→10 V en 1 s exacto (60 BPM). Reset automático: Schmitt Trigger detecta los 10 V y dispara un MOSFET 2N7000 que descarga el capacitor abruptamente a 0 V.</p>
+          <div class="formula" style="margin-top:.7rem">Vout(t) = −(1/RC)·∫Vin dt</div>
+        </div>
+        <span class="asep">→</span>
+        <div class="ablock fi">
+          <h4>Comparadores de Ventana</h4>
+          <p>Banco de comparadores traduce rangos de voltaje en pulsos de activación para cada subonda. P: 3,6–4,4 V. T: 7,2–10 V. Salida en lógica positiva mediante MOSFET inversor.</p>
+        </div>
+        <span class="asep">→</span>
+        <div class="ablock fi">
+          <h4>Síntesis P, QRS, T</h4>
+          <p><strong>P y T:</strong> Filtros Sallen-Key Bessel-Thompson (Q = 0,55, C₁/C₂ = 1,21) generan domos suaves sin ringing.<br><strong>QRS:</strong> Integradores limitados con Rin = 0,5·Rbias generan rampas triangulares simétricas.</p>
+        </div>
+        <span class="asep">→</span>
+        <div class="ablock fi">
+          <h4>Buffers + Sumador Inversor</h4>
+          <p>Buffer de aislamiento por canal (Zin→∞) elimina el efecto de carga. Sumador inversor con Rf = Rin = 100 kΩ garantiza ganancia unitaria balanceada. Inversor final corrige polaridad.</p>
+          <div class="formula" style="margin-top:.7rem">Vsum = −Rf · Σ (Vᵢ / Rin)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BESSEL-THOMPSON -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Decisión Clave: Filtro Bessel-Thompson</h2>
+      <div class="hbox fi">
+        <h3>¿Por qué Bessel-Thompson y no un filtro clásico?</h3>
+        <p>Los filtros clásicos (Butterworth, Chebyshev) deformaban las ondas P y T con sobreimpulsos (ringing) en los flancos de subida, distorsionando su morfología característica. La aproximación Bessel-Thompson garantiza un retraso de grupo constante, eliminando completamente el ringing.</p>
+        <div class="formula">Q = (1/2)·√(C₁/C₂) = 0,55 → C₁/C₂ = 1,21</div>
+        <p style="margin-top:.7rem">La regla de diseño resultante: <strong>C₁ debe ser ≈20% mayor que C₂</strong>. Esta relación genera los domos de fase lineal perfectos para representar las ondas P y T del ECG clínico.</p>
+      </div>
+
+      <div class="hbox fi" style="border-color:rgba(255,159,10,.3); background: rgba(255,159,10,.07);">
+        <h3 style="color:var(--amber)">Síntesis del complejo QRS</h3>
+        <p>Para las ondas Q y S se usan integradores limitados que generan rampas triangulares negativas. La simetría de subida/bajada se garantiza con la relación:</p>
+        <div class="formula" style="border-color:var(--amber); color:var(--amber)">Rin = 0,5 · Rbias → pendientes de subida y bajada simétricas</div>
+        <p style="margin-top:.7rem">La onda R usa la misma configuración precedida por un inversor (G = −1) para polarizar positivamente la rampa y generar el pico alto dominante del ciclo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PATOLOGÍAS -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Patologías Cardíacas Emuladas en Tiempo Real</h2>
+      <p class="sdesc">El sistema permite alterar la morfología de la señal en tiempo real mediante conmutaciones físicas simples. Cada patología corresponde a una manipulación directa de la red resistiva o a la inserción/eliminación de una etapa.</p>
+
+      <div class="cards-grid">
+        <div class="path-card fi">
+          <div class="path-icon">○</div>
+          <h4>Fibrilación Auricular</h4>
+          <p>Un switch suprime el ingreso de la rampa al comparador de la onda P, eliminando su pulso completamente. El trazo resultante no muestra onda P, replicando clínicamente la ausencia de activación auricular coordinada.</p>
+          <span class="mechanism">Switch → suprime comparador onda P → AP = 0</span>
+        </div>
+        <div class="path-card fi">
+          <div class="path-icon">△</div>
+          <h4>Hipertrofia Ventricular</h4>
+          <p>Un potenciómetro ajusta la resistencia inferior del divisor de tensión pre-Buffer del canal R, elevando la amplitud de la onda R a voluntad. Replica el aumento en la amplitud del complejo QRS característico de la hipertrofia.</p>
+          <span class="mechanism">Potenciómetro → divisor pre-Buffer R → ↑ amplitud onda R</span>
+        </div>
+        <div class="path-card fi">
+          <div class="path-icon">▽</div>
+          <h4>Isquemia Miocárdica</h4>
+          <p>Un conmutador inserta un amplificador operacional inversor (G = −1) exclusivamente en la salida de la onda T, invirtiendo su fase. Replica el patrón de onda T invertida característico de la isquemia miocárdica.</p>
+          <span class="mechanism">Switch → inserta inversor G=−1 → inversión onda T</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESOLUCIÓN DE PROBLEMAS -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Problemas Encontrados y Soluciones Implementadas</h2>
+      <p class="sdesc">El proceso de diseño exigió un exhaustivo análisis analítico frente a obstáculos severos de hardware propios del prototipado analógico.</p>
+
+      <div class="error-card fi">
+        <h4>Oscilaciones residuales (Ringing)</h4>
+        <div class="problem">Las topologías clásicas de filtrado deformaban las ondas P y T con sobreimpulsos en los flancos de subida.</div>
+        <div class="solution"><span class="sol-tag">SOLUCIÓN</span>Evolucionar a transferencia tipo Bessel-Thompson con Q = 0,55 y C₁/C₂ = 1,21, garantizando retraso de grupo constante sin picos destructivos.</div>
+      </div>
+
+      <div class="error-card fi">
+        <h4>Atenuación severa por efecto de carga</h4>
+        <div class="problem">Conectar los divisores resistivos de calibración directamente al sumador alteraba las ecuaciones de ganancia al modificar la impedancia Thévenin de cada canal.</div>
+        <div class="solution"><span class="sol-tag">SOLUCIÓN</span>Implementar un Buffer de aislamiento por canal y utilizar resistencias de 100 kΩ uniformes en el sumador. Eliminó completamente el efecto de carga preservando la morfología de cada subonda.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section class="section">
+    <div class="wrap">
+      <h3 class="gallery-h">Implementación física, esquemáticos y oscilogramas</h3>
+      <div class="gallery">
+        <img src="Fotos/P5/Figura1.jpg" alt="Figura 1">
+        <img src="Fotos/P5/Figura2.jpg" alt="Figura 2">
+        <img src="Fotos/P5/Figura3.jpg" alt="Figura 3">
+        <img src="Fotos/P5/Figura4.jpg" alt="Figura 4">
+        <img src="Fotos/P5/Figura5.jpg" alt="Figura 5">
+        <img src="Fotos/P5/Figura6.jpg" alt="Figura 6">
+        <img src="Fotos/P5/Figura7.jpeg" alt="Figura 7">
+        <img src="Fotos/P5/Figura8.jpeg" alt="Figura 8">
+        <img src="Fotos/P5/Figura9.jpeg" alt="Figura 9">
+        <img src="Fotos/P5/Figura10.jpeg" alt="Figura 10">
+        <img src="Fotos/P5/Figura11.jpeg" alt="Figura 11">
+        <img src="Fotos/P5/Figura12.jpeg" alt="Figura 12">
+      </div>
+    </div>
+  </section>
+
+  <footer class="pfooter">
+    <div class="wrap">
+      <div class="pfooter-nav">
+        <a href="p4.html">← ECG Diseño Conceptual</a>
+        <a href="index.html">← Volver al portafolio</a>
+      </div>
+      <div class="pfooter-info"><p>Electrónica Analógica III · Universidad Surcolombiana · 2026</p></div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lb">
+    <button class="lb-x" id="lbX">✕</button>
+    <button class="lb-p" id="lbP">‹</button>
+    <button class="lb-n" id="lbN">›</button>
+    <img class="lb-img" id="lbI" src="" alt="">
+  </div>
+  <script>
+    const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);}}),{threshold:.08});
+    document.querySelectorAll('.fi,.card,.path-card,.ablock,.hbox,.error-card,.wcard').forEach(el=>{el.classList.add('fi');obs.observe(el);});
+    const lb=document.getElementById('lb'),lbI=document.getElementById('lbI');let imgs=[],cur=0;
+    document.querySelectorAll('.gallery img').forEach(img=>{img.addEventListener('click',()=>{imgs=Array.from(img.closest('.gallery').querySelectorAll('img'));cur=imgs.indexOf(img);open(cur);});});
+    function open(i){lbI.src=imgs[i].src;lbI.alt=imgs[i].alt;lb.classList.add('on');document.body.style.overflow='hidden';}
+    function close(){lb.classList.remove('on');document.body.style.overflow='';}
+    document.getElementById('lbX').onclick=close;lb.addEventListener('click',e=>{if(e.target===lb)close();});
+    document.getElementById('lbP').onclick=()=>{cur=(cur-1+imgs.length)%imgs.length;open(cur);};
+    document.getElementById('lbN').onclick=()=>{cur=(cur+1)%imgs.length;open(cur);};
+    document.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft'){cur=(cur-1+imgs.length)%imgs.length;open(cur);}if(e.key==='ArrowRight'){cur=(cur+1)%imgs.length;open(cur);}});
+  </script>
+</body>
+</html>

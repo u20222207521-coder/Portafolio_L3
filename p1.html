@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitácora de Laboratorio · EA-III</title>
+  <link rel="stylesheet" href="project.css">
+  <style>
+    :root {
+      --accent:        #39ff14;
+      --accent-dim:    rgba(57,255,20,.1);
+      --accent-border: rgba(57,255,20,.25);
+      --bg:            #080e0a;
+      --bg-2:          #0d160f;
+      --surface:       rgba(57,255,20,.05);
+      --border:        rgba(57,255,20,.1);
+      --hero-gradient: linear-gradient(160deg, #050a06 0%, #0a160c 40%, #040d06 100%);
+      --muted:         rgba(200,255,200,.55);
+    }
+    /* Oscilloscope grid for hero */
+    .phero { position: relative; }
+    .phero::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(57,255,20,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(57,255,20,.06) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+    /* Scanline effect */
+    .phero::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.08) 2px, rgba(0,0,0,.08) 4px);
+    }
+    .circuit-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.8rem; margin-bottom: 1rem;
+      transition: background .25s, transform .25s, border-color .25s;
+    }
+    .circuit-card:hover { background: var(--accent-dim); border-color: var(--accent-border); transform: translateX(4px); }
+    .circuit-card h3 { font-size: 1.05rem; font-weight: 700; color: #39ff14; margin-bottom: .6rem; display: flex; align-items: center; gap: .6rem; }
+    .circuit-card h3 span { font-size: 1.3rem; }
+    .circuit-card p { font-size: .9rem; color: var(--muted); margin-bottom: .7rem; line-height: 1.7; }
+  </style>
+</head>
+<body>
+
+  <nav class="pnav">
+    <a href="index.html" class="pnav-back">← Portafolio</a>
+    <span class="pnav-title">Bitácora de Laboratorio</span>
+    <a href="p2.html" class="pnav-next">Siguiente →</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="phero">
+    <div class="phero-accent"></div>
+    <div class="phero-content wrap">
+      <span class="ptag">Primer proyecto</span>
+      <h1>Bitácora de<br><em>Laboratorio</em></h1>
+      <p class="phero-sub">Implementación y análisis experimental de cinco circuitos analógicos. Cada práctica integra diseño teórico, simulación en NI Multisim y verificación con osciloscopio RIGOL.</p>
+    </div>
+  </header>
+
+  <!-- CIRCUITO 1: CLAMPER -->
+  <section class="section">
+    <div class="wrap">
+      <span class="atag">Circuito 1</span>
+      <h2 class="stitle">Clamper Activo — LM324</h2>
+      <p class="sdesc">Un sujetador de nivel DC que desplaza la señal de entrada sin alterar su forma de onda. La constante de tiempo τ = RC debe ser mucho mayor que el período de la señal para garantizar su funcionamiento.</p>
+
+      <div class="circuit-card fi">
+        <h3><span>⌇</span> Principio de funcionamiento</h3>
+        <p>El capacitor en serie almacena carga durante la conducción del diodo y la conserva cuando este se bloquea, sumando un voltaje DC fijo a la señal de entrada. El Op-Amp LM324 actúa como seguidor de voltaje para la referencia V₂, compensando la caída en el diodo.</p>
+        <div class="formula">Vout = 2·Vin + V₂ = 2·Vin + 5 V</div>
+        <div class="specs">
+          <span class="spec">C₁ = 10 µF</span>
+          <span class="spec">R₁ = 50 kΩ</span>
+          <span class="spec">R₂ = 10 kΩ</span>
+          <span class="spec">Vref = 5 V</span>
+          <span class="spec">τ = 0,5 s</span>
+          <span class="spec">f_min ≈ 100 Hz</span>
+        </div>
+      </div>
+
+      <div class="circuit-card fi">
+        <h3><span>⚠</span> Resultado experimental clave</h3>
+        <p>El circuito funcionó correctamente solo para frecuencias superiores a ~100 Hz. Por debajo, el período T comienza a ser comparable con τ = 0,5 s, el capacitor se descarga parcialmente y el desplazamiento DC se degrada. Esta limitación confirma la condición de diseño τ ≫ T.</p>
+        <div class="formula">Para f = 100 Hz: T = 0,01 s ≪ τ = 0,5 s ✓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIRCUITO 2: CLASE B -->
+  <section class="section">
+    <div class="wrap">
+      <span class="atag">Circuito 2</span>
+      <h2 class="stitle">Amplificador de Audio Clase B</h2>
+      <p class="sdesc">Configuración push-pull con transistores 2N3904 (NPN) y 2N3906 (PNP). Alta eficiencia energética con uso de un diodo Zener para eliminar la distorsión de cruce por cero.</p>
+
+      <div class="cards-grid">
+        <div class="card fi">
+          <div class="card-icon">⊃⊂</div>
+          <h4>Principio Push-Pull</h4>
+          <p>El 2N3904 amplifica el semiciclo positivo y el 2N3906 el negativo. Cada transistor conduce solo la mitad del ciclo, logrando una eficiencia teórica de hasta el 78,5% frente al 50% de la clase A.</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">⚡</div>
+          <h4>Eliminación del Cruce por Cero</h4>
+          <p>El diodo Zener de 5,1 V en la etapa de polarización garantiza que los transistores nunca se apaguen completamente, evitando la distorsión de la transición entre semiciclos.</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">⚠</div>
+          <h4>Limitación de Corriente</h4>
+          <p>Los 2N3904/3906 solo manejan hasta 200 mA de colector. Para la resistencia de potencia de 10 Ω se identificó que se necesitan transistores TIP41/TIP42 o BD169 para manejar la potencia requerida.</p>
+        </div>
+      </div>
+
+      <div class="formula">R_B = (VCC − VBE) / IB = (12 − 0,7) / 0,05 mA = 226 kΩ</div>
+      <div class="specs" style="margin-top:.6rem">
+        <span class="spec">2N3904 NPN</span>
+        <span class="spec">2N3906 PNP</span>
+        <span class="spec">Zener 5,1 V</span>
+        <span class="spec">VCC = 12 V</span>
+        <span class="spec">Av ≈ 100×</span>
+        <span class="spec">η ≈ 78,5%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIRCUITO 3: DAC -->
+  <section class="section">
+    <div class="wrap">
+      <span class="atag">Circuito 3</span>
+      <h2 class="stitle">Convertidor DAC R-2R de 4 Bits</h2>
+      <p class="sdesc">Red escalera R-2R de 4 bits con transistores 2N2222 como interruptores digitales controlados por un DIP switch. El LM358 a la salida entrega una tensión analógica proporcional a la entrada digital.</p>
+
+      <div class="cards-grid">
+        <div class="card fi">
+          <div class="card-icon">⇌</div>
+          <h4>Función de Transferencia</h4>
+          <p>Con Vref = 5 V y 4 bits, se generan 2⁴ = 16 niveles de salida, desde 0 V hasta 4,69 V. El voltaje de salida es proporcional al valor binario en la entrada.</p>
+          <div class="formula" style="margin-top:.7rem">Vout = (Vref / 2^N) · Σ Bᵢ · 2ⁱ</div>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">📐</div>
+          <h4>Red R-2R</h4>
+          <p>Se utilizaron 4 resistencias de 1 kΩ y 4 de 2 kΩ. Los transistores 2N2222 operan en saturación como interruptores: IB = IC/hFE = 10 mA / 200 = 0,05 mA.</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">🔍</div>
+          <h4>Diferencia Simulación vs Experimento</h4>
+          <p>La simulación mostró un nivel DC negativo en la salida mientras que el montaje físico presentó un DC positivo. Causa: condiciones de polarización del LM358 y tolerancias reales de las resistencias.</p>
+        </div>
+      </div>
+
+      <div class="formula">Vout,max = (5/16) × 15 = 4,6875 V ≈ 4,69 V @ 1111₂</div>
+    </div>
+  </section>
+
+  <!-- CIRCUITO 4: SALLEN-KEY -->
+  <section class="section">
+    <div class="wrap">
+      <span class="atag">Circuito 4</span>
+      <h2 class="stitle">Filtro Sallen-Key Pasa-Altas — 50 kHz</h2>
+      <p class="sdesc">Filtro activo de segundo orden con topología VCVS. Diseñado para fc = 50 kHz con Q = 0,5, garantizando estabilidad. Verificado experimentalmente con diagrama de Bode construido en Python.</p>
+
+      <div class="cards-grid">
+        <div class="card fi">
+          <div class="card-icon">∿</div>
+          <h4>Diseño de Componentes</h4>
+          <p>Con C = 1 nF y fc = 50 kHz, la resistencia se calcula: R = 1/(2π·fc·C) = 3,18 kΩ → comercial 3,3 kΩ. Ganancia unitaria (K=1) garantiza Q = 1/(3−K) = 0,5.</p>
+          <div class="formula">fc = 1/(2πRC) = 50 kHz · Q = 0,5</div>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">📊</div>
+          <h4>Resultados Experimentales</h4>
+          <p>A 1 kHz: Vout = 5,6 mVp (fuerte atenuación). A 50 kHz: Vout = 33,6 mVp (−6 dB, fase ≈ 90°). A 400 kHz: Vout = 64 mVp (ganancia unitaria, fase ≈ 0°). Bode experimental confirma fc en rango 40–50 kHz.</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">⚡</div>
+          <h4>Lección Práctica</h4>
+          <p>La señal aparecía reducida a la mitad con alimentación monopolar. Al identificar el problema y cambiar a alimentación bipolar, el circuito operó correctamente con ganancia unitaria. Lección: verificar siempre la polarización del Op-Amp.</p>
+        </div>
+      </div>
+
+      <div class="specs">
+        <span class="spec">R = 3,3 kΩ</span>
+        <span class="spec">C = 1 nF</span>
+        <span class="spec">LM324N</span>
+        <span class="spec">fc = 50 kHz</span>
+        <span class="spec">Q = 0,5</span>
+        <span class="spec">−6 dB @ corte</span>
+        <span class="spec">Alimentación bipolar ±</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIRCUITO 5: INDUCTOR SIMULADO -->
+  <section class="section">
+    <div class="wrap">
+      <span class="atag">Circuito 5</span>
+      <h2 class="stitle">Inductor Simulado — 560 mH</h2>
+      <p class="sdesc">Reemplaza el inductor físico mediante un amplificador operacional con resistores y capacitor. Validado con un filtro pasa-altas RL con fc = 2,84 kHz. Error experimental de solo −1,14%.</p>
+
+      <div class="hbox fi">
+        <h3>Derivación de la inductancia equivalente</h3>
+        <p>Bajo la condición de diseño R₁ ≪ R₂, la impedancia de entrada del circuito se simplifica a Zin ≈ sR₁R₂C₁, idéntica a la impedancia de un inductor ideal ZL = sL. Por tanto:</p>
+        <div class="formula">Leq = R₁ · R₂ · C₁ = (56)(100×10³)(100×10⁻⁹) = 560 mH</div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card fi">
+          <div class="card-icon">✓</div>
+          <h4>Verificación Experimental</h4>
+          <p>En el filtro RL con R = 10 kΩ, la fc medida fue 2,81 kHz (diseño: 2,84 kHz). La inductancia experimental calculada fue Leq = 566,39 mH con error de −1,14%.</p>
+        </div>
+        <div class="card fi">
+          <div class="card-icon">📏</div>
+          <h4>Linealidad del Sistema</h4>
+          <p>Las mediciones a dos amplitudes diferentes (200 mVp y 472 mVp) demostraron que la fc se mantuvo constante en 2,81 kHz, confirmando la linealidad del circuito activo.</p>
+        </div>
+      </div>
+
+      <div class="specs">
+        <span class="spec">R₁ = 56 Ω</span>
+        <span class="spec">R₂ = 100 kΩ</span>
+        <span class="spec">C₁ = 100 nF</span>
+        <span class="spec">Leq = 560 mH</span>
+        <span class="spec">Error: −1,14%</span>
+        <span class="spec">Alim. bipolar ±15 V</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section class="section">
+    <div class="wrap">
+      <h3 class="gallery-h">Galería — Simulaciones y evidencia experimental</h3>
+      <div class="gallery">
+        <img src="Fotos/P1/Figura1.jpeg" alt="Figura 1">
+        <img src="Fotos/P1/Figura2.jpeg" alt="Figura 2">
+        <img src="Fotos/P1/Figura3.png" alt="Figura 3">
+        <img src="Fotos/P1/Figura4.png" alt="Figura 4">
+        <img src="Fotos/P1/Figura5.png" alt="Figura 5">
+        <img src="Fotos/P1/Figura6.png" alt="Figura 6">
+        <img src="Fotos/P1/Figura7.png" alt="Figura 7">
+        <img src="Fotos/P1/Figura8.png" alt="Figura 8">
+        <img src="Fotos/P1/Figura9.png" alt="Figura 9">
+        <img src="Fotos/P1/Figura10.png" alt="Figura 10">
+        <img src="Fotos/P1/Figura11.png" alt="Figura 11">
+        <img src="Fotos/P1/Figura12.png" alt="Figura 12">
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="pfooter">
+    <div class="wrap">
+      <div class="pfooter-nav">
+        <a href="index.html">← Portafolio principal</a>
+        <a href="p2.html">Siguiente: Conteo de Colonias →</a>
+      </div>
+      <div class="pfooter-info"><p>Electrónica Analógica III · Universidad Surcolombiana · 2026</p></div>
+    </div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lb">
+    <button class="lb-x" id="lbX">✕</button>
+    <button class="lb-p" id="lbP">‹</button>
+    <button class="lb-n" id="lbN">›</button>
+    <img class="lb-img" id="lbI" src="" alt="">
+  </div>
+
+  <script>
+    // Fade-in
+    const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);} }), {threshold:.1});
+    document.querySelectorAll('.fi,.card,.circuit-card,.hbox').forEach(el => { el.classList.add('fi'); obs.observe(el); });
+    // Lightbox
+    const lb=document.getElementById('lb'),lbI=document.getElementById('lbI');
+    let imgs=[],cur=0;
+    document.querySelectorAll('.gallery img').forEach(img=>{
+      img.addEventListener('click',()=>{
+        imgs=Array.from(img.closest('.gallery').querySelectorAll('img'));
+        cur=imgs.indexOf(img); open(cur);
+      });
+    });
+    function open(i){lbI.src=imgs[i].src;lbI.alt=imgs[i].alt;lb.classList.add('on');document.body.style.overflow='hidden';}
+    function close(){lb.classList.remove('on');document.body.style.overflow='';}
+    document.getElementById('lbX').onclick=close;
+    lb.addEventListener('click',e=>{if(e.target===lb)close();});
+    document.getElementById('lbP').onclick=()=>{cur=(cur-1+imgs.length)%imgs.length;open(cur);};
+    document.getElementById('lbN').onclick=()=>{cur=(cur+1)%imgs.length;open(cur);};
+    document.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft'){cur=(cur-1+imgs.length)%imgs.length;open(cur);}if(e.key==='ArrowRight'){cur=(cur+1)%imgs.length;open(cur);}});
+  </script>
+</body>
+</html>

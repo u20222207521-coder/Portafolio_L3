@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sintetizador ECG — Diseño · EA-III</title>
+  <link rel="stylesheet" href="project.css">
+  <style>
+    :root {
+      --accent:        #7c83fd;
+      --accent-dim:    rgba(124,131,253,.12);
+      --accent-border: rgba(124,131,253,.28);
+      --bg:            #05061a;
+      --bg-2:          #080a24;
+      --surface:       rgba(124,131,253,.06);
+      --border:        rgba(124,131,253,.12);
+      --hero-gradient: linear-gradient(160deg, #03041a 0%, #07091f 50%, #050620 100%);
+      --muted:         rgba(200,205,255,.55);
+      --pink:          #ff6b9d;
+    }
+    /* Star field */
+    .phero::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,.5) 1px, transparent 1px);
+      background-size: 60px 60px; background-position: 0 0, 30px 30px;
+      opacity: .25;
+    }
+    /* ECG line decoration */
+    .ecg-deco {
+      position: absolute; bottom: 2rem; left: 0; right: 0;
+      height: 60px; overflow: hidden; opacity: .3; pointer-events: none;
+    }
+    .ecg-deco svg { width: 100%; height: 100%; }
+    /* Wave param table */
+    .wave-table-wrap { overflow-x: auto; margin-bottom: 2.5rem; }
+    .wave-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .wave-table th { background: var(--accent-dim); color: var(--accent); font-size: .75rem; letter-spacing: 1px; text-transform: uppercase; padding: .65rem .9rem; text-align: left; border-bottom: 1px solid var(--accent-border); }
+    .wave-table td { padding: .55rem .9rem; border-bottom: 1px solid var(--border); color: var(--muted); }
+    .wave-table td:first-child { font-size: 1.4rem; font-weight: 900; color: var(--accent); }
+    .wave-table tr:hover td { background: var(--accent-dim); }
+    /* Anomaly cards */
+    .anom-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.6rem; margin-bottom: 1rem;
+      border-left: 4px solid var(--accent);
+      transition: background .25s, transform .25s;
+    }
+    .anom-card:hover { background: var(--accent-dim); transform: translateX(4px); }
+    .anom-card h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: .5rem; }
+    .anom-card p { font-size: .88rem; color: var(--muted); margin-bottom: .6rem; line-height: 1.65; }
+    .anom-param {
+      font-size: .77rem; font-family: monospace; color: var(--accent);
+      background: var(--accent-dim); border: 1px solid var(--accent-border);
+      padding: .2rem .6rem; border-radius: 4px; display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="pnav">
+    <a href="p3.html" class="pnav-back">← Tutorial PCB</a>
+    <span class="pnav-title">Sintetizador ECG — Diseño</span>
+    <a href="p5.html" class="pnav-next">ECG Síntesis →</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="phero">
+    <div class="phero-accent"></div>
+    <div class="phero-content wrap" style="position:relative;z-index:2">
+      <span class="ptag">Cuarto proyecto</span>
+      <h1>Sintetizador ECG<br><em>Diseño Conceptual</em></h1>
+      <p class="phero-sub">Caracterización matemática de la señal electrocardiográfica y propuesta del modelo de síntesis gaussiano. Especificación de requerimientos para 5 subondas y 3 anomalías cardíacas.</p>
+    </div>
+    <div class="ecg-deco">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <polyline points="0,30 150,30 160,30 170,10 180,50 190,30 210,30 230,5 250,55 265,30 280,30 430,30 440,30 450,15 460,45 470,30 490,30 510,5 530,55 545,30 560,30 710,30 720,30 730,15 740,45 750,30 770,30 790,5 810,55 825,30 840,30 990,30 1000,30 1010,15 1020,45 1030,30 1050,30 1070,5 1090,55 1105,30 1120,30 1200,30"
+          fill="none" stroke="#7c83fd" stroke-width="1.5"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- MODELO GAUSSIANO -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Modelo de Síntesis Gaussiano</h2>
+      <p class="sdesc">La señal ECG se modela como la superposición de cinco funciones gaussianas, una por cada subonda. Este enfoque es adecuado porque la campana gaussiana aproxima correctamente la morfología de las subondas P, R y T, y puede modelar los picos negativos Q y S usando amplitudes negativas.</p>
+
+      <div class="hbox fi">
+        <h3>Ecuación del modelo</h3>
+        <div class="formula" style="font-size:1.05rem">v<sub>ECG</sub>(t) = Σ Aᵢ · exp[−(t − t₀ᵢ)² / 2σᵢ²] &nbsp;&nbsp; i ∈ {P, Q, R, S, T}</div>
+        <p style="margin-top:.7rem">Cada subonda queda definida por tres parámetros: <strong>Aᵢ</strong> (amplitud), <strong>t₀ᵢ</strong> (posición temporal en el ciclo) y <strong>σᵢ</strong> (ancho de la campana). El sistema opera a 75 lpm con ciclo de referencia de 800 ms.</p>
+      </div>
+
+      <div class="waves-flex fi">
+        <div class="wcard">
+          <div class="wcard-letter">P</div>
+          <div class="wcard-amp">+0,25 V</div>
+          <div class="wcard-info">t₀ = 50 ms · σ = 20–25 ms</div>
+          <div class="wcard-fn">Activación auricular</div>
+        </div>
+        <div class="wcard">
+          <div class="wcard-letter">Q</div>
+          <div class="wcard-amp" style="color:#ff6b9d">−0,10 V</div>
+          <div class="wcard-info">t₀ = 170 ms · σ = 8–10 ms</div>
+          <div class="wcard-fn">Inicio despol. ventricular</div>
+        </div>
+        <div class="wcard" style="border-color:var(--accent-border);background:var(--accent-dim)">
+          <div class="wcard-letter" style="font-size:3rem">R</div>
+          <div class="wcard-amp">+1,50 V</div>
+          <div class="wcard-info">t₀ = 200 ms · σ = 8–12 ms</div>
+          <div class="wcard-fn">Pico ventricular principal</div>
+        </div>
+        <div class="wcard">
+          <div class="wcard-letter">S</div>
+          <div class="wcard-amp" style="color:#ff6b9d">−0,25 V</div>
+          <div class="wcard-info">t₀ = 225 ms · σ = 8–10 ms</div>
+          <div class="wcard-fn">Final despol. ventricular</div>
+        </div>
+        <div class="wcard">
+          <div class="wcard-letter">T</div>
+          <div class="wcard-amp">+0,35 V</div>
+          <div class="wcard-info">t₀ = 415 ms · σ = 35–45 ms</div>
+          <div class="wcard-fn">Repolarización ventricular</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISTRIBUCIÓN TEMPORAL -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Distribución Temporal — Ciclo de 800 ms</h2>
+      <div class="wave-table-wrap fi">
+        <table class="wave-table">
+          <tr><th>Subonda</th><th>Inicio</th><th>Centro</th><th>Fin</th><th>Observación</th></tr>
+          <tr><td>P</td><td>0 ms</td><td>50 ms</td><td>100 ms</td><td>Duración ∼100 ms</td></tr>
+          <tr><td style="color:var(--muted);font-size:.85rem;font-weight:400">PR</td><td>100 ms</td><td>—</td><td>160 ms</td><td>60 ms de línea base</td></tr>
+          <tr><td>Q</td><td>160 ms</td><td>170 ms</td><td>185 ms</td><td>Complejo QRS ∼80 ms</td></tr>
+          <tr><td>R</td><td>185 ms</td><td>200 ms</td><td>215 ms</td><td>Pico dominante</td></tr>
+          <tr><td>S</td><td>215 ms</td><td>225 ms</td><td>240 ms</td><td>Complejo QRS ∼80 ms</td></tr>
+          <tr><td style="color:var(--muted);font-size:.85rem;font-weight:400">ST</td><td>240 ms</td><td>—</td><td>330 ms</td><td>90 ms de línea base</td></tr>
+          <tr><td>T</td><td>330 ms</td><td>415 ms</td><td>500 ms</td><td>Duración ∼170 ms</td></tr>
+          <tr><td style="color:var(--muted);font-size:.85rem;font-weight:400">TP</td><td>500 ms</td><td>—</td><td>800 ms</td><td>300 ms hasta siguiente ciclo</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANOMALÍAS -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Anomalías Cardíacas Modeladas</h2>
+      <p class="sdesc">Se seleccionaron tres anomalías que afectan parámetros distintos del modelo, garantizando que el sintetizador sea ajustable en múltiples dimensiones.</p>
+
+      <div class="anom-card fi">
+        <h4>Taquicardia Sinusal</h4>
+        <p>La frecuencia cardíaca supera los 100 lpm. Implica una reducción del período del ciclo por debajo de 600 ms. La forma y amplitud de todas las subondas se mantienen iguales; solo cambia el tempo de repetición. El intervalo de reposo TP es el que más se acorta.</p>
+        <div class="formula">T &lt; 600 ms → FC &gt; 100 lpm</div>
+        <span class="anom-param" style="margin-top:.5rem;display:inline-block">Ajuste: reducir período del oscilador de ritmo</span>
+      </div>
+
+      <div class="anom-card fi">
+        <h4>Fibrilación Auricular</h4>
+        <p>Las aurículas se contraen de forma descoordinada. La onda P desaparece (AP = 0 V) y el ritmo ventricular se vuelve irregular (variación aleatoria ±10–20% en el período). El complejo QRS y la onda T mantienen morfología normal.</p>
+        <div class="formula">AP = 0 V · T variable (±10–20% por ciclo)</div>
+        <span class="anom-param" style="margin-top:.5rem;display:inline-block">Ajuste: AP = 0 mediante switch; período irregular</span>
+      </div>
+
+      <div class="anom-card fi">
+        <h4>Bloqueo AV de Primer Grado</h4>
+        <p>Retardo excesivo en la conducción auriculoventricular. El intervalo PR se alarga más allá de 200 ms (típico: 250–400 ms). La onda P, el complejo QRS y la onda T conservan su forma y amplitud normales.</p>
+        <div class="formula">Intervalo PR &gt; 200 ms (nominal: 60 ms)</div>
+        <span class="anom-param" style="margin-top:.5rem;display:inline-block">Ajuste: aumentar retardo PR en bloque temporal</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUERIMIENTOS -->
+  <section class="section">
+    <div class="wrap">
+      <h2 class="stitle">Requerimientos del Sistema</h2>
+      <div class="cards-grid">
+        <div class="card fi"><div class="card-icon">📡</div><h4>RF-01 Señal ECG Completa</h4><p>Generar una señal periódica tipo ECG con las cinco subondas P, Q, R, S, T visibles en osciloscopio.</p></div>
+        <div class="card fi"><div class="card-icon">❤️</div><h4>RF-02 Rango de FC</h4><p>Operar entre 60 y 120 lpm. Verificación: período medido entre 500 ms y 1000 ms.</p></div>
+        <div class="card fi"><div class="card-icon">🎚</div><h4>RF-03 Amplitud Ajustable</h4><p>Amplitud de cada subonda independientemente ajustable mediante potenciómetro.</p></div>
+        <div class="card fi"><div class="card-icon">⏱</div><h4>RF-04 Ancho Ajustable</h4><p>Ancho temporal de cada subonda ajustable. Verificación: medición de duración en osciloscopio.</p></div>
+        <div class="card fi"><div class="card-icon">📊</div><h4>RO-01 Amplitud mínima</h4><p>Señal de salida con amplitud mínima de 1 Vpp. Variación &lt; 5% con carga de 10 kΩ.</p></div>
+        <div class="card fi"><div class="card-icon">🔬</div><h4>RF-06 Tres anomalías</h4><p>Reproducir las tres anomalías modificando parámetros ajustables. Comparación con parámetros esperados.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section class="section">
+    <div class="wrap">
+      <h3 class="gallery-h">Diagramas y esquemas del diseño</h3>
+      <div class="gallery gallery-sm">
+        <img src="Fotos/P4/Imagen1.jpg" alt="Diagrama de bloques del sintetizador ECG">
+      </div>
+    </div>
+  </section>
+
+  <footer class="pfooter">
+    <div class="wrap">
+      <div class="pfooter-nav">
+        <a href="p3.html">← Tutorial PCB</a>
+        <a href="p5.html">Siguiente: ECG Síntesis →</a>
+      </div>
+      <div class="pfooter-info"><p>Electrónica Analógica III · Universidad Surcolombiana · 2026</p></div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lb">
+    <button class="lb-x" id="lbX">✕</button>
+    <button class="lb-p" id="lbP">‹</button>
+    <button class="lb-n" id="lbN">›</button>
+    <img class="lb-img" id="lbI" src="" alt="">
+  </div>
+  <script>
+    const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');obs.unobserve(x.target);}}),{threshold:.08});
+    document.querySelectorAll('.fi,.card,.anom-card,.wcard,.hbox,.wave-table-wrap').forEach(el=>{el.classList.add('fi');obs.observe(el);});
+    const lb=document.getElementById('lb'),lbI=document.getElementById('lbI');let imgs=[],cur=0;
+    document.querySelectorAll('.gallery img').forEach(img=>{img.addEventListener('click',()=>{imgs=Array.from(img.closest('.gallery').querySelectorAll('img'));cur=imgs.indexOf(img);open(cur);});});
+    function open(i){lbI.src=imgs[i].src;lbI.alt=imgs[i].alt;lb.classList.add('on');document.body.style.overflow='hidden';}
+    function close(){lb.classList.remove('on');document.body.style.overflow='';}
+    document.getElementById('lbX').onclick=close;lb.addEventListener('click',e=>{if(e.target===lb)close();});
+    document.getElementById('lbP').onclick=()=>{cur=(cur-1+imgs.length)%imgs.length;open(cur);};
+    document.getElementById('lbN').onclick=()=>{cur=(cur+1)%imgs.length;open(cur);};
+    document.addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')close();if(e.key==='ArrowLeft'){cur=(cur-1+imgs.length)%imgs.length;open(cur);}if(e.key==='ArrowRight'){cur=(cur+1)%imgs.length;open(cur);}});
+  </script>
+</body>
+</html>
